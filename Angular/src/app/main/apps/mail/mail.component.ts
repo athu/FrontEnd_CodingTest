@@ -107,8 +107,8 @@ export class MailComponent implements OnInit, OnDestroy
             takeUntil(this._unsubscribeAll),
             debounceTime(300),
             distinctUntilChanged()
-        )
-            .subscribe(searchText => {
+        )           
+            .subscribe(searchText => {                
                 this._mailService.onSearchTextChanged.next(searchText);
             });
     }

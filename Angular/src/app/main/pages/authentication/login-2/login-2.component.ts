@@ -75,23 +75,7 @@ export class Login2Component implements OnInit {
      * On init
      */
     ngOnInit(): void {
-        
-        // // Zack Attempts for Remember Me (Not working as intended)
-        // if (JSON.parse(localStorage.getItem('rememberme')) !== null) {
-        //     this.loginForm = this._formBuilder.group({
-        //         username: localStorage.getItem('username'),
-        //         // token: localStorage.getItem('token'),
-        //         rememberMe: JSON.parse(localStorage.getItem('rememberme')),
-        //     });
-        // }
-        // else {
-        //     this.loginForm = this._formBuilder.group({
-        //         username: ['', [Validators.required, Validators.email]],
-        //         password: ['', Validators.required],
-        //     });
-            
-        // }
-
+                
         // Xin Lei Remember Me
         if (localStorage.getItem('username') != null) {
             this.loginForm = this._formBuilder.group({
@@ -140,11 +124,15 @@ export class Login2Component implements OnInit {
 
         // if (buttonName == "AMS")
         // {
+       
         this.authenticationService.login(this.f.username.value, this.f.password.value)
         // this.authenticationService.login_hashed(this.f.username.value, pass)
             .pipe(first())
             .subscribe(
                 data => {
+
+                    console.log('Login Success');
+
                     //XL if remember me check, store it in local;
                     if (this.rememberme) {
                         // console.log('RememberME checked');
@@ -165,22 +153,7 @@ export class Login2Component implements OnInit {
                     {
                         this.router.navigate(['/apps/mail/sent']);
                     }
-
-                    // // Zack New Method of Remember Me
-                    // if (this.rememberme) {
-                    //     localStorage.setItem('username', data.loginName);
-                    //     localStorage.setItem('rememberme', JSON.stringify(this.rememberme));
-                    //     localStorage.setItem('token', data.token);
-                    // }
-
-                    // //If login go to
-                    // //this.router.navigate([this.returnUrl]);
-                    // if (JSON.parse(localStorage.getItem('currentUser'))['accessRole'].toLowerCase() != 'user administrator') {
-                    //     this.router.navigate(['/apps/mail/sent']);
-                    // }
-                    // else {
-                    //     this.router.navigate(['/apps/configuration/user/usermanagement']);
-                    // }
+                    
 
                 },
                 error => {
@@ -195,6 +168,7 @@ export class Login2Component implements OnInit {
                         this.loading = false;
                     }
                     else if (error.status == 200) {
+                        
                         this.alertService.error(error.error.text);
                         this.loading = false;
                     }
@@ -203,69 +177,6 @@ export class Login2Component implements OnInit {
                         this.loading = false;
                     }
                 });
-        // }
-        // else if (buttonName == "LDAP")
-        // {
-        //     this.authenticationService.loginLdap(this.f.username.value, this.f.password.value)
-        //     // this.authenticationService.login_hashed(this.f.username.value, pass)
-        //         .pipe(first())
-        //         .subscribe(
-        //             data => {
-        //                 //XL if remember me check, store it in local;
-        //                 if (this.rememberme) {
-        //                     // console.log('RememberME checked');
-        //                     //XL use btoa encode the user and pw
-        //                     localStorage.setItem('username', btoa(this.f.username.value));
-        //                     // localStorage.setItem('password', btoa(this.f.password.value));
-        //                 };
-        //                 //XL If login go to
-        //                 //this.router.navigate([this.returnUrl]);
-        //                 if (JSON.parse(localStorage.getItem('currentUser'))['accessRole'].toLowerCase() != 'user administrator')
-        //                 {
-        //                     this.router.navigate(['/apps/mail/sent']);
-        //                 }
-        //                 else
-        //                 {
-        //                     this.router.navigate(['/apps/configuration/user/usermanagement']);
-        //                 }
-
-        //                 // // Zack New Method of Remember Me
-        //                 // if (this.rememberme) {
-        //                 //     localStorage.setItem('username', data.loginName);
-        //                 //     localStorage.setItem('rememberme', JSON.stringify(this.rememberme));
-        //                 //     localStorage.setItem('token', data.token);
-        //                 // }
-
-        //                 // //If login go to
-        //                 // //this.router.navigate([this.returnUrl]);
-        //                 // if (JSON.parse(localStorage.getItem('currentUser'))['accessRole'].toLowerCase() != 'user administrator') {
-        //                 //     this.router.navigate(['/apps/mail/sent']);
-        //                 // }
-        //                 // else {
-        //                 //     this.router.navigate(['/apps/configuration/user/usermanagement']);
-        //                 // }
-
-        //             },
-        //             error => {
-        //                 console.log(error);
-        //                 //XL display the meaningful error message
-        //                 if (error.status == 0) {
-        //                     this.alertService.error("HttpErrorResponse, Unknown Error. Please Check Network Status");
-        //                     this.loading = false;
-        //                 }
-        //                 else if (error.status == 400) {
-        //                     this.alertService.error("Username or Password is invalid");
-        //                     this.loading = false;
-        //                 }
-        //                 else if (error.status == 200) {
-        //                     this.alertService.error(error.error.text);
-        //                     this.loading = false;
-        //                 }
-        //                 else {
-        //                     this.alertService.error("Unknown Error!");
-        //                     this.loading = false;
-        //                 }
-        //             });
-        //     }   
+        
     }
 }

@@ -14,6 +14,8 @@ import { UserRoles } from '@/_models/Enums/user-roles.enum';
 
 import {UserModuleAccessService } from "./usermoduleaccess.service";
 
+import { catchError, tap } from 'rxjs/operators';
+
 @Injectable({ providedIn: 'root' })
 export class AuthenticationService {
     private currentUserSubject: BehaviorSubject<User>;
@@ -35,16 +37,24 @@ export class AuthenticationService {
     }
 
     login(loginname, password) {
-         loginname = this.cryptoService.EncryptInput1(loginname);
-         password = this.cryptoService.EncryptInput1(password);
-        
+
+        loginname = this.cryptoService.EncryptInput1(loginname);
+        password = this.cryptoService.EncryptInput1(password);     
+                         
         return this.http.post<any>(`${environment.apiUrl}/users/authenticate`, { loginname, password })
             .pipe(
                 timeout(300000)
                 ,map(user => {
+                                         
                 // store user details and jwt token in local storage to keep user logged in between page refreshes
                 localStorage.setItem('currentUser', JSON.stringify(user));
+
+                
+
                 this.currentUserSubject.next(user);
+
+                
+
                 // Expect an array of user Roles, single user role also will return an array of 1 value.
                 var userRoles = user.userRoles.split(',').map(Number);
 

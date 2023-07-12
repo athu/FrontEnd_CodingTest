@@ -42,8 +42,7 @@ export class MailListComponent implements OnInit, OnDestroy
     constructor(
         private _activatedRoute: ActivatedRoute,
         private _mailService: MailService,
-        private _location: Location,
-        private _httpClient: HttpClient
+        private _location: Location
     )
     {
         // Set the private defaults
@@ -63,22 +62,27 @@ export class MailListComponent implements OnInit, OnDestroy
          this._mailService.onMailsChanged
             .pipe(takeUntil(this._unsubscribeAll))
             .subscribe(mails => {
+                
                 this.mails = mails.results;
-                this.totalRows = mails.totalRows;
+                this.totalRows =  mails.totalRows;
                 this.pageNumber = mails.pageNumber;
                 this.rowsOfPage = mails.rowsOfPage;
                 this.folderId = mails.folderId;
-            });
 
-            this.config = {
-                itemsPerPage: this.rowsOfPage,
-                currentPage: this.pageNumber,
-                totalItems: this.totalRows
-              };
+                this.config = {
+                    itemsPerPage: this.rowsOfPage,
+                    currentPage: this.pageNumber,
+                    totalItems: this.totalRows
+                  };
+
+                  this._mailService.onCurrentMailChanged.next(null);
+            });
+            
         // Subscribe to update current mail on changes
         this._mailService.onCurrentMailChanged
             .pipe(takeUntil(this._unsubscribeAll))
             .subscribe(currentMail => {
+                
                 if ( !currentMail )
                 {
                     // Set the current mail id to null to deselect the current mail
@@ -99,22 +103,7 @@ export class MailListComponent implements OnInit, OnDestroy
                     }
                     else
                     {
-                        this._location.go('apps/mail/' + folderHandle);
-
-                        this._mailService.onMailsChanged
-                        .pipe(takeUntil(this._unsubscribeAll))
-                        .subscribe(mails => {
-                            this.mails = mails.results;
-                            this.totalRows = mails.totalRows;
-                            this.pageNumber = mails.pageNumber;
-                            this.rowsOfPage = mails.rowsOfPage;
-                            this.folderId = mails.folderId;
-                        });
-                        this.config = {
-                            itemsPerPage: this.rowsOfPage,
-                            currentPage: this.pageNumber,
-                            totalItems: this.totalRows
-                        };
+                        this._location.go('apps/mail/' + folderHandle);                        
                     }
                 }
                 else
