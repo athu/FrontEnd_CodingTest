@@ -63,6 +63,7 @@ export class MailMainSidebarComponent implements OnInit, OnDestroy
             .pipe(takeUntil(this._unsubscribeAll))
             .subscribe(folders => {
                 this.folders = folders;
+                                
             });
 
         this._mailService.onFiltersChanged

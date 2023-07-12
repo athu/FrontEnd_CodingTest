@@ -25,6 +25,7 @@ export class UserModuleAccessService {
     }
 
     getAllModuleByUserId(userid: number) {
+        
         return this.http.get<FuseNavigation[]>(`${environment.apiUrl}/modules/GetModulesByUserId/${userid}`)
         .pipe(first())
                 .subscribe(

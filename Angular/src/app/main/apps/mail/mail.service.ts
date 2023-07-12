@@ -80,18 +80,12 @@ export class MailService implements Resolve<any>
                         this.setCurrentMail(null);
                     }
 
-                    this.onSearchTextChanged.subscribe(searchText => {
-                        if ( searchText !== '' )
-                        {
+                    this.onSearchTextChanged.subscribe(searchText => {                        
+                                                 
                             this.searchText = searchText;
                             this.getMails();
-                        }
-                        else
-                        {
-                            this.searchText = searchText;
-                            this.getMails();
-                        }
-                    });
+                        
+                     });
 
                     resolve();
                 },
@@ -129,12 +123,7 @@ export class MailService implements Resolve<any>
     getFilters(): Promise<any>
     {
         return new Promise((resolve, reject) => {
-            // this._httpClient.get('api/mail-filters')
-            //     .subscribe((response: any) => {
-            //         this.filters = response;
-            //         this.onFiltersChanged.next(this.filters);
-            //         resolve(this.filters);
-            //     }, reject);
+            
             this.filters = MailFakeDb.filters;
             this.onFiltersChanged.next(this.filters);
             resolve(this.filters);
@@ -149,12 +138,7 @@ export class MailService implements Resolve<any>
     getLabels(): Promise<any>
     {
         return new Promise((resolve, reject) => {
-            // this._httpClient.get('api/mail-labels')
-            //     .subscribe((response: any) => {
-            //         this.labels = response;
-            //         this.onLabelsChanged.next(this.labels);
-            //         resolve(this.labels);
-            //     }, reject);
+            
             this.labels = MailFakeDb.labels;
             this.onLabelsChanged.next(this.labels);
             resolve(this.labels);
@@ -169,13 +153,14 @@ export class MailService implements Resolve<any>
     getMails(): Promise<HeaderMail>
     {
         if ( this.routeParams.labelHandle )
-        {
+        {            
             return this.getMailsByLabel(this.routeParams.labelHandle);
         }
         if ( this.routeParams.filterHandle )
-        {
+        {            
             return this.getMailsByFilter(this.routeParams.filterHandle);
         }
+       
         return this.getMailsByFolder(this.routeParams.folderHandle,this.pageNumber);
     }
 
@@ -185,11 +170,14 @@ export class MailService implements Resolve<any>
      * @param handle
      * @returns {Promise<Mail[]>}
      */
-    getMailsByFolder(handle,pNumber): Promise<HeaderMail>
-    {
+    getMailsByFolder(handle, pNumber): Promise<HeaderMail>
+    {        
         return new Promise((resolve, reject) => {
-            var folders = MailFakeDb.folders.filter(x => x.handle == handle);
+            
+            var folders = MailFakeDb.folders.filter(x => x.handle == handle);                    
+
             var folderId = folders[0].id;
+           
             var pageNumber;
             if(pNumber == undefined)
             {
@@ -200,21 +188,15 @@ export class MailService implements Resolve<any>
                 pageNumber = pNumber;
             }
             const rowsOfPage = this.rowsOfPage;
-
-            this._httpClient.get(`${environment.apiUrl}/mails/folderData/${folderId}/${pageNumber}/${rowsOfPage}`)
+            
+            this._httpClient.get(`${environment.apiUrl}/mails/folderData/${folderId}/${pageNumber}/${rowsOfPage}`,
+                {   params: {search: this.searchText}}   )
                 .subscribe((mails: any) => {
-                    //    this.mails = mails.map(mail =>{
-                    //         return new Mail(mail);
-                    //     });
-
+                                        
                      this.headerMail = mails;
                      this.headerMail.folderId = folderId;
                      this.mails = this.headerMail.results;
-                    //this.mails = FuseUtils.filterArrayByString(this.mails, this.searchText);
-
-                    this.headerMail.results = FuseUtils.filterArrayByString(this.headerMail.results, this.searchText);
-                    //this.onMailsChanged.next(this.mails);
-
+                                        
                     this.onMailsChanged.next(this.headerMail);
                     //resolve(this.mails);
                     resolve(this.headerMail);
@@ -233,21 +215,7 @@ export class MailService implements Resolve<any>
     {
         return new Promise((resolve, reject) => {
 
-            // this._httpClient.get('api/mail-mails?' + handle + '=true')
-            //     .subscribe((mails: any) => {
-
-            //         this.mails = mails.map(mail => {
-            //             return new Mail(mail);
-            //         });
-
-            //         this.mails = FuseUtils.filterArrayByString(this.mails, this.searchText);
-
-            //         this.onMailsChanged.next(this.mails);
-
-            //         resolve(this.mails);
-
-            //     }, reject);
-
+            
             // TODO: if getMailsByFilter is to be used, need to link to actual API and not in memory DB
             var mails = MailFakeDb.mails.filter(x => x[handle] == true);
             this.mails = mails.map(mail => {
@@ -270,25 +238,7 @@ export class MailService implements Resolve<any>
     getMailsByLabel(handle): Promise<HeaderMail>
     {
         return new Promise((resolve, reject) => {
-            // this._httpClient.get('api/mail-labels?handle=' + handle)
-            //     .subscribe((labels: any) => {
-
-            //         const labelId = labels[0].id;
-            //         this._httpClient.get(`${environment.apiUrl}/mails/label/${labelId}`)
-            //             .subscribe((mails: any) => {
-
-            //                 this.mails = mails.map(mail => {
-            //                     return new Mail(mail);
-            //                 });
-
-            //                 this.mails = FuseUtils.filterArrayByString(this.mails, this.searchText);
-
-            //                 this.onMailsChanged.next(this.mails);
-
-            //                 resolve(this.mails);
-
-            //             }, reject);
-            //     });
+            
             var labels = MailFakeDb.labels.filter(x => x.handle == handle);
             const labelId = labels[0].id;
             this._httpClient.get(`${environment.apiUrl}/mails/label/${labelId}`)
@@ -456,22 +406,7 @@ export class MailService implements Resolve<any>
     updateMail(mail): Promise<any>
     {
         return new Promise((resolve, reject) => {
-
-            // this._httpClient.post('api/mail-mails/' + mail.id, {...mail})
-            //     .subscribe(response => {
-
-            //         this.getMails().then(mails => {
-
-            //             if ( mails && this.currentMail )
-            //             {
-            //                 this.setCurrentMail(this.currentMail.id);
-            //             }
-
-            //             resolve(mails);
-
-            //         }, reject);
-            //     });
-
+            
             // TODO: if updateMail is to be used, need to link to actual API and not in memory DB
             var response = MailFakeDb.mails.push(...mail);
             this.getMails().then(mails => {
